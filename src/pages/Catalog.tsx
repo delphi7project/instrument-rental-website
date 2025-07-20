@@ -10,156 +10,12 @@ import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
+import { db, Tool } from '@/lib/database';
 
-const tools = [
-  {
-    id: 1,
-    name: 'Перфоратор Bosch GSH 16-28',
-    brand: 'Bosch',
-    category: 'Электроинструмент',
-    subcategory: 'Перфораторы',
-    price: 1200,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: true,
-    rating: 4.8,
-    reviews: 124,
-    description: 'Профессиональный перфоратор для сверления и долбления бетона',
-    power: '1500W',
-    weight: '5.8кг',
-    features: ['SDS-Max', 'Антивибрация', 'Регулировка оборотов'],
-    inStock: 5
-  },
-  {
-    id: 2,
-    name: 'Болгарка DeWalt DWE402',
-    brand: 'DeWalt',
-    category: 'Электроинструмент',
-    subcategory: 'Болгарки',
-    price: 800,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: true,
-    rating: 4.9,
-    reviews: 89,
-    description: 'Угловая шлифовальная машина 125мм с защитным кожухом',
-    power: '1010W',
-    weight: '2.2кг',
-    features: ['Плавный пуск', 'Защита от перегрузки', 'Быстрая замена диска'],
-    inStock: 8
-  },
-  {
-    id: 3,
-    name: 'Отбойный молоток Makita HM1317C',
-    brand: 'Makita',
-    category: 'Электроинструмент',
-    subcategory: 'Отбойные молотки',
-    price: 2500,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: false,
-    rating: 4.7,
-    reviews: 56,
-    description: 'Мощный отбойный молоток для демонтажа и разрушения',
-    power: '1510W',
-    weight: '11.1кг',
-    features: ['AVT технология', 'Мягкий старт', 'Светодиодная подсветка'],
-    inStock: 0
-  },
-  {
-    id: 4,
-    name: 'Миксер строительный Metabo RWE 1100',
-    brand: 'Metabo',
-    category: 'Электроинструмент',
-    subcategory: 'Миксеры',
-    price: 600,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: true,
-    rating: 4.6,
-    reviews: 42,
-    description: 'Двухскоростной миксер для перемешивания растворов',
-    power: '1100W',
-    weight: '4.3кг',
-    features: ['2 скорости', 'Блокировка шпинделя', 'Эргономичные рукоятки'],
-    inStock: 3
-  },
-  {
-    id: 5,
-    name: 'Дрель аккумуляторная Bosch GSR 18V',
-    brand: 'Bosch',
-    category: 'Электроинструмент',
-    subcategory: 'Дрели',
-    price: 450,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: true,
-    rating: 4.8,
-    reviews: 78,
-    description: 'Компактная аккумуляторная дрель-шуруповёрт',
-    power: '18V',
-    weight: '1.5кг',
-    features: ['Литий-ионная батарея', 'LED подсветка', '25 настроек крутящего момента'],
-    inStock: 12
-  },
-  {
-    id: 6,
-    name: 'Компрессор воздушный Atlas Copco',
-    brand: 'Atlas Copco',
-    category: 'Пневмоинструмент',
-    subcategory: 'Компрессоры',
-    price: 1800,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: true,
-    rating: 4.7,
-    reviews: 34,
-    description: 'Поршневой компрессор для пневмоинструмента',
-    power: '2200W',
-    weight: '28кг',
-    features: ['50л ресивер', 'Манометр', 'Автоматический пуск'],
-    inStock: 2
-  },
-  {
-    id: 7,
-    name: 'Гайковёрт пневматический Ingersoll Rand',
-    brand: 'Ingersoll Rand',
-    category: 'Пневмоинструмент',
-    subcategory: 'Гайковёрты',
-    price: 950,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: true,
-    rating: 4.9,
-    reviews: 67,
-    description: 'Ударный гайковёрт 1/2" для автосервиса',
-    power: '6.2 бар',
-    weight: '2.3кг',
-    features: ['Регулировка мощности', 'Эргономичная рукоятка', 'Низкий уровень шума'],
-    inStock: 4
-  },
-  {
-    id: 8,
-    name: 'Лобзик Festool Carvex PS 420',
-    brand: 'Festool',
-    category: 'Электроинструмент',
-    subcategory: 'Лобзики',
-    price: 750,
-    image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-    available: true,
-    rating: 4.8,
-    reviews: 91,
-    description: 'Маятниковый лобзик для точного пиления',
-    power: '550W',
-    weight: '2.1кг',
-    features: ['Система пылеудаления', 'LED подсветка', 'Быстрая замена пилки'],
-    inStock: 6
-  }
-];
-
-const categories = [
-  { id: 'all', name: 'Все категории', count: tools.length },
-  { id: 'electrical', name: 'Электроинструмент', count: tools.filter(t => t.category === 'Электроинструмент').length },
-  { id: 'pneumatic', name: 'Пневмоинструмент', count: tools.filter(t => t.category === 'Пневмоинструмент').length },
-  { id: 'hand', name: 'Ручной инструмент', count: 0 }
-];
-
-const brands = ['Все бренды', 'Bosch', 'DeWalt', 'Makita', 'Metabo', 'Atlas Copco', 'Ingersoll Rand', 'Festool'];
 
 export default function Catalog() {
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBrand, setSelectedBrand] = useState('Все бренды');
@@ -167,6 +23,29 @@ export default function Catalog() {
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAvailable, setShowAvailable] = useState(false);
+
+  useEffect(() => {
+    loadTools();
+  }, []);
+
+  const loadTools = async () => {
+    try {
+      const toolsData = db.collection('tools').find({ isActive: true });
+      setTools(toolsData);
+    } catch (error) {
+      console.error('Ошибка загрузки инструментов:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const categories = [
+    { id: 'all', name: 'Все категории', count: tools.length },
+    { id: 'electrical', name: 'Электроинструмент', count: tools.filter(t => t.category === 'Электроинструмент').length },
+    { id: 'pneumatic', name: 'Пневмоинструмент', count: tools.filter(t => t.category === 'Пневмоинструмент').length },
+  ];
+
+  const brands = ['Все бренды', ...new Set(tools.map(tool => tool.brand))];
 
   const filteredTools = useMemo(() => {
     let filtered = tools.filter(tool => {
@@ -177,7 +56,7 @@ export default function Catalog() {
                              (selectedCategory === 'pneumatic' && tool.category === 'Пневмоинструмент');
       const matchesBrand = selectedBrand === 'Все бренды' || tool.brand === selectedBrand;
       const matchesPrice = tool.price >= priceRange[0] && tool.price <= priceRange[1];
-      const matchesAvailable = !showAvailable || tool.available;
+      const matchesAvailable = !showAvailable || tool.status === 'available';
 
       return matchesSearch && matchesCategory && matchesBrand && matchesPrice && matchesAvailable;
     });
@@ -204,6 +83,17 @@ export default function Catalog() {
     window.location.href = `/product/${toolId}`;
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Icon name="Loader2" className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Загрузка каталога...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -217,8 +107,8 @@ export default function Catalog() {
             <nav className="hidden md:flex space-x-8">
               <a href="/" className="text-gray-600 hover:text-blue-600 transition-colors">Главная</a>
               <a href="/catalog" className="text-blue-600 font-medium">Каталог</a>
-              <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors">Услуги</a>
-              <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">О нас</a>
+              <Link to="/categories" className="text-gray-600 hover:text-blue-600 transition-colors">Категории</Link>
+              <Link to="/brands" className="text-gray-600 hover:text-blue-600 transition-colors">Бренды</Link>
             </nav>
             <Button size="sm">
               <Icon name="User" className="h-4 w-4 mr-2" />
@@ -490,11 +380,11 @@ export default function Catalog() {
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                           <div className="flex items-center space-x-1">
                             <Icon name="Zap" className="h-4 w-4" />
-                            <span>{tool.power}</span>
+                            <span>{tool.specifications.power || 'N/A'}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Icon name="Weight" className="h-4 w-4" />
-                            <span>{tool.weight}</span>
+                            <span>{tool.specifications.weight || 'N/A'}</span>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -503,10 +393,10 @@ export default function Catalog() {
                           </span>
                           <Button 
                             size="sm" 
-                            disabled={!tool.available}
+                            disabled={tool.status !== 'available'}
                             className="bg-blue-600 hover:bg-blue-700"
                           >
-                            {tool.available ? 'В корзину' : 'Занято'}
+                            {tool.status === 'available' ? 'В корзину' : 'Занято'}
                           </Button>
                         </div>
                       </div>

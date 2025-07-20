@@ -8,6 +8,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./contexts/CartContext";
 import Index from "./pages/Index";
 import Catalog from "./pages/Catalog";
+import Categories from "./pages/Categories";
+import Brands from "./pages/Brands";
+import News from "./pages/News";
+import NewsDetail from "./pages/NewsDetail";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Services from "./pages/Services";
+import FAQ from "./pages/FAQ";
+import Reviews from "./pages/Reviews";
+import Search from "./pages/Search";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -31,6 +41,16 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/catalog" element={<Catalog />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/brands" element={<Brands />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/news/:slug" element={<NewsDetail />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/search" element={<Search />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />

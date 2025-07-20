@@ -11,56 +11,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCart } from '@/contexts/CartContext';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import { db, Tool } from '@/lib/database';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 export default function Index() {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [searchQuery, setSearchQuery] = useState('');
+  const [tools, setTools] = useState<Tool[]>([]);
   const { addToCart, getTotalItems } = useCart();
 
-  const tools = [
-    {
-      id: 1,
-      name: 'Перфоратор Bosch',
-      category: 'Электроинструмент',
-      price: 1200,
-      image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-      available: true,
-      rating: 4.8,
-      description: 'Профессиональный перфоратор для сверления и долбления'
-    },
-    {
-      id: 2,
-      name: 'Болгарка DeWalt',
-      category: 'Электроинструмент',
-      price: 800,
-      image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-      available: true,
-      rating: 4.9,
-      description: 'Угловая шлифовальная машина 125мм'
-    },
-    {
-      id: 3,
-      name: 'Отбойный молоток',
-      category: 'Пневмоинструмент',
-      price: 2500,
-      image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-      available: false,
-      rating: 4.7,
-      description: 'Мощный отбойный молоток для демонтажа'
-    },
-    {
-      id: 4,
-      name: 'Миксер строительный',
-      category: 'Электроинструмент',
-      price: 600,
-      image: '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
-      available: true,
-      rating: 4.6,
-      description: 'Для перемешивания растворов и красок'
+  useEffect(() => {
+    loadTools();
+  }, []);
+
+  const loadTools = async () => {
+    try {
+      const toolsData = db.collection('tools').find({ isActive: true });
+      setTools(toolsData.slice(0, 4)); // Показываем только первые 4 инструмента
+    } catch (error) {
+      console.error('Ошибка загрузки инструментов:', error);
     }
-  ];
+  };
 
   const categories = ['Все', 'Электроинструмент', 'Пневмоинструмент', 'Ручной инструмент'];
 
@@ -80,10 +52,10 @@ export default function Index() {
               <span className="text-2xl font-bold text-gray-900">ToolRental</span>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <a href="#catalog" className="text-gray-600 hover:text-blue-600 transition-colors">Каталог</a>
-              <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors">Услуги</a>
-              <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">О нас</a>
-              <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Контакты</a>
+              <Link to="/catalog" className="text-gray-600 hover:text-blue-600 transition-colors">Каталог</Link>
+              <Link to="/services" className="text-gray-600 hover:text-blue-600 transition-colors">Услуги</Link>
+              <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors">О нас</Link>
+              <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">Контакты</Link>
             </nav>
             <div className="flex items-center space-x-4">
               <Button variant="outline" size="sm">
@@ -241,11 +213,11 @@ export default function Index() {
                   <Card key={tool.id} className="hover:shadow-lg transition-shadow">
                     <div className="relative">
                       <img 
-                        src={tool.image} 
+                        src={tool.images[0] || '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg'} 
                         alt={tool.name}
                         className="w-full h-48 object-cover rounded-t-lg"
                       />
-                      {!tool.available && (
+                      {tool.status !== 'available' && (
                         <div className="absolute top-2 right-2">
                           <Badge variant="secondary">Занято</Badge>
                         </div>
@@ -271,22 +243,22 @@ export default function Index() {
                         </span>
                         <Button 
                           size="sm" 
-                          disabled={!tool.available}
+                          disabled={tool.status !== 'available'}
                           className="bg-blue-600 hover:bg-blue-700"
                           onClick={() => {
-                            if (tool.available) {
+                            if (tool.status === 'available') {
                               addToCart({
-                                id: tool.id,
+                                id: tool._id,
                                 name: tool.name,
                                 price: tool.price,
-                                image: tool.image,
+                                image: tool.images[0] || '/img/5e130715-b755-4ab5-82af-c9e448995766.jpg',
                                 category: tool.category,
                                 duration: 1
                               });
                             }
                           }}
                         >
-                          {tool.available ? 'В корзину' : 'Занято'}
+                          {tool.status === 'available' ? 'В корзину' : 'Занято'}
                         </Button>
                       </div>
                     </CardContent>
@@ -558,19 +530,19 @@ export default function Index() {
             <div>
               <h3 className="font-semibold mb-4">Каталог</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Электроинструмент</a></li>
-                <li><a href="#" className="hover:text-white">Пневмоинструмент</a></li>
-                <li><a href="#" className="hover:text-white">Ручной инструмент</a></li>
-                <li><a href="#" className="hover:text-white">Садовая техника</a></li>
+                <li><Link to="/categories" className="hover:text-white">Электроинструмент</Link></li>
+                <li><Link to="/categories" className="hover:text-white">Пневмоинструмент</Link></li>
+                <li><Link to="/categories" className="hover:text-white">Ручной инструмент</Link></li>
+                <li><Link to="/categories" className="hover:text-white">Садовая техника</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Компания</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">О нас</a></li>
-                <li><a href="#" className="hover:text-white">Контакты</a></li>
-                <li><a href="#" className="hover:text-white">Доставка</a></li>
-                <li><a href="#" className="hover:text-white">Гарантии</a></li>
+                <li><Link to="/about" className="hover:text-white">О нас</Link></li>
+                <li><Link to="/contact" className="hover:text-white">Контакты</Link></li>
+                <li><Link to="/services" className="hover:text-white">Доставка</Link></li>
+                <li><Link to="/faq" className="hover:text-white">Гарантии</Link></li>
               </ul>
             </div>
             <div>
